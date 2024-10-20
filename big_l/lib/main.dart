@@ -1,15 +1,14 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/bill_provider.dart'; // Ensure the path is correct
-import '../pages/home_page.dart'; // Import the HomePage from home_page.dart
+import 'providers/bill_provider.dart';
+import 'pages/home_page.dart';
 
 void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => BillProvider()),
-      ],
-      child: MyApp(),
+    ChangeNotifierProvider(
+      create: (context) => BillProvider(),
+      child: const MyApp(),
     ),
   );
 }
@@ -20,8 +19,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Big L',
-      home: HomePage(), // The HomePage is now linked from home_page.dart
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF61bc84),
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF1E1E1E),
+      ),
+      home: const HomePage(),
     );
   }
 }

@@ -1,37 +1,38 @@
-// ignore_for_file: prefer_final_fields
+// bill_provider.dart
+import 'package:flutter/foundation.dart';
+import 'package:big_l/models/bill.dart';
 
-import 'package:flutter/material.dart';
-import '../models/bill.dart';
+// class Bill {
+//   final String name;
+//   final String price;
+//   final String dueDate;
+//   bool isPaid;
 
-class BillProvider with ChangeNotifier{
-  List<Bill> _bills = [];
+//   Bill({
+//     required this.name,
+//     required this.price,
+//     required this.dueDate,
+//     this.isPaid = false,
+//   });
+// }
+
+class BillProvider extends ChangeNotifier {
+  final List<Bill> _bills = [];
 
   List<Bill> get bills => _bills;
 
-  void addBill(Bill bill){
+  void addBill(Bill bill) {
     _bills.add(bill);
     notifyListeners();
   }
 
-  void deleteBill(String id){
-    _bills.removeWhere((bill)=>bill.id == id);
+  void toggleBillStatus(int index) {
+    _bills[index].isPaid = !_bills[index].isPaid;
     notifyListeners();
   }
 
-  void markAsPaid(String id){
-    final bill = _bills.firstWhere((bill)=>bill.id == id);
-    bill.isPaid = true;
+  void removeBill(int index) {
+    _bills.removeAt(index);
     notifyListeners();
   }
-
-  void markAsUnpaid(String id){
-    final bill = _bills.firstWhere((bill)=> bill.id == id);
-    bill.isPaid = false;
-    notifyListeners();
-  }
-
-  List<Bill> get paidBills => _bills.where((bill)=>bill.isPaid).toList();
-
-  List<Bill> get unpaidBills => _bills.where((bill) => !bill.isPaid).toList();
-  
 }
