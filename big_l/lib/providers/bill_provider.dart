@@ -2,20 +2,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:big_l/models/bill.dart';
 
-// class Bill {
-//   final String name;
-//   final String price;
-//   final String dueDate;
-//   bool isPaid;
-
-//   Bill({
-//     required this.name,
-//     required this.price,
-//     required this.dueDate,
-//     this.isPaid = false,
-//   });
-// }
-
 class BillProvider extends ChangeNotifier {
   final List<Bill> _bills = [];
 

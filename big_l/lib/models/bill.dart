@@ -19,14 +19,6 @@ class Bill{
     'isPaid': isPaid,
     };
   }
-  
-  // factory Bill.fromMap(Map<String, dynamic> map){
-  //   return Bill(
-  //     name: map['name'],
-  //     price: map['amount'],
-  //     dueDate: DateTime.parse(map['dueDate']),
-  //     isPaid: map['isPaid'],
-  //   );
-  // }
+
 }
 
