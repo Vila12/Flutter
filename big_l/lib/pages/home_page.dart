@@ -1,4 +1,5 @@
 // home_page.dart
+import 'package:big_l/pages/manage_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -47,10 +48,10 @@ class HomePage extends StatelessWidget {
                 children: [
                   _buildButton(
                     context: context,
-                    label: "History",
+                    label: "Manage",
                     onTap: () => Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) => const ManagePage()),
                     ),
                   ),
                   _buildButton(

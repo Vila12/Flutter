@@ -3,11 +3,43 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/bill_provider.dart';
 import 'pages/home_page.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+// import 'package:timezone/timezone.dart' as tz;
 
-void main() {
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
+
+  // Initialization settings for Android
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+
+  // Initialize flutter_local_notifications
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
+      // Handle notification tap
+      final String? payload = notificationResponse.payload;
+      if (payload != null) {
+        debugPrint('notification payload: $payload');
+      }
+    },
+  );
+
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => BillProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => BillProvider(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );
