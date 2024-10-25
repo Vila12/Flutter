@@ -1,70 +1,105 @@
-// bill_provider.dart
 import 'package:flutter/foundation.dart';
 import 'package:big_l/models/bill.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/timezone.dart';
-import '../main.dart';  // Import the initialized notification plugin
+import 'package:intl/intl.dart';
+import '../main.dart';
 
 class BillProvider extends ChangeNotifier {
   final List<Bill> _bills = [];
 
-  List<Bill> get bills => _bills;
+  List<Bill> get bills => List.unmodifiable(_bills); // Return unmodifiable list for safety
 
   // Add a new bill and schedule notification
   void addBill(Bill bill) {
     _bills.add(bill);
-    notifyListeners();
-    
-    // Schedule the notification one day before the due date
     _scheduleNotification(bill);
+    print('Bill added: ${bill.name}'); // Debug print
+    notifyListeners();
   }
 
   void toggleBillStatus(int index) {
-    _bills[index].isPaid = !_bills[index].isPaid;
-    notifyListeners();
+    if (index >= 0 && index < _bills.length) {
+      _bills[index].isPaid = !_bills[index].isPaid;
+      print('Bill status toggled: ${_bills[index].name}'); // Debug print
+      notifyListeners();
+    }
   }
 
   void removeBill(int index) {
-    _cancelNotification(_bills[index]);  // Cancel notification if the bill is removed
-    _bills.removeAt(index);
-    notifyListeners();
+    if (index >= 0 && index < _bills.length) {
+      _cancelNotification(_bills[index]);
+      final removedBill = _bills.removeAt(index);
+      print('Bill removed: ${removedBill.name}'); // Debug print
+      notifyListeners();
+    }
   }
 
   void updateBill(int index, Bill newBill) {
-    _cancelNotification(_bills[index]);  // Cancel old notification
-    _bills[index] = newBill;
-    _scheduleNotification(newBill);      // Schedule new notification
-    notifyListeners();
+    if (index >= 0 && index < _bills.length) {
+      try {
+        print('Updating bill at index $index'); // Debug print
+        print('Old bill: ${_bills[index].name}'); // Debug print
+        
+        _cancelNotification(_bills[index]);
+        _bills[index] = newBill;
+        _scheduleNotification(newBill);
+        
+        print('New bill: ${newBill.name}'); // Debug print
+        print('Current bills: ${_bills.map((b) => b.name).toList()}'); // Debug print
+        
+        notifyListeners();
+      } catch (e) {
+        print('Error updating bill: $e'); // Debug print
+      }
+    }
   }
 
-  // Schedule notification
+  // Schedule notification with error handling
   void _scheduleNotification(Bill bill) {
-    final dueDate = DateTime.parse(bill.dueDate);
-    final notificationTime = dueDate.subtract(const Duration(days: 1));  // One day before due date
+    try {
+      final dueDate = DateFormat('dd-MM-yyyy').parse(bill.dueDate);
+      final notificationTime = dueDate.subtract(const Duration(days: 1));
+      final billIndex = _bills.indexOf(bill);
 
-    flutterLocalNotificationsPlugin.zonedSchedule(
-      _bills.length,  // Use the bill's index or a unique id
-      'Upcoming Bill Due',
-      '${bill.name} is due tomorrow!',
-      tz.TZDateTime.from(notificationTime, local),  // Schedule time in local timezone
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'your_channel_id',  // Replace with your channel id
-          'Bill Notifications',  // Replace with your channel name
-          channelDescription: 'Reminder for upcoming bill due date',
-          importance: Importance.max,
-          priority: Priority.high,
+      if (billIndex == -1) {
+        print('Warning: Bill not found in list when scheduling notification'); // Debug print
+        return;
+      }
+
+      flutterLocalNotificationsPlugin.zonedSchedule(
+        billIndex,
+        'Upcoming Bill Due',
+        '${bill.name} is due tomorrow!',
+        tz.TZDateTime.from(notificationTime, tz.local),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'your_channel_id',
+            'Bill Notifications',
+            channelDescription: 'Reminder for upcoming bill due date',
+            importance: Importance.max,
+            priority: Priority.high,
+          ),
         ),
-      ),
-      matchDateTimeComponents: DateTimeComponents.time,  // Schedule based on exact time
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-    );
+        matchDateTimeComponents: DateTimeComponents.time,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+      print('Notification scheduled for ${bill.name}'); // Debug print
+    } catch (e) {
+      print('Error scheduling notification: $e'); // Debug print
+    }
   }
 
-  // Cancel notification when bill is removed or updated
   void _cancelNotification(Bill bill) {
-    flutterLocalNotificationsPlugin.cancel(_bills.indexOf(bill));  // Cancel notification by id
+    try {
+      final billIndex = _bills.indexOf(bill);
+      if (billIndex != -1) {
+        flutterLocalNotificationsPlugin.cancel(billIndex);
+        print('Notification cancelled for ${bill.name}'); // Debug print
+      }
+    } catch (e) {
+      print('Error cancelling notification: $e'); // Debug print
+    }
   }
 }
