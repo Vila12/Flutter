@@ -6,7 +6,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as timezone;
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 Future<void> initNotifications() async {
@@ -21,7 +21,8 @@ Future<void> initNotifications() async {
   // Initialize flutter_local_notifications
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
-    onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
+    onDidReceiveNotificationResponse:
+        (NotificationResponse notificationResponse) async {
       // Handle notification tap
       final String? payload = notificationResponse.payload;
       if (payload != null) {
@@ -40,7 +41,7 @@ Future<void> initNotifications() async {
 void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    
+
     // Initialize timezone
     tz.initializeTimeZones();
     final String timeZoneName = timezone.local.name;
@@ -59,10 +60,16 @@ void main() async {
     );
 
     await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    runApp(const MyApp());
+    runApp(
+      ChangeNotifierProvider(
+        create: (context) => BillProvider(),
+        child: const MyApp(),
+      ),
+    );
   } catch (e) {
     debugPrint('Error during initialization: $e');
   }

@@ -13,7 +13,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Use watch() to listen to changes
     final billProvider = Provider.of<BillProvider>(context);
-    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      billProvider.loadBills();
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFF1E1E1E),
       body: SafeArea(
@@ -39,7 +42,7 @@ class HomePage extends StatelessWidget {
                 thickness: 0.5,
               ),
             ),
-            
+
             // Buttons Section
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -51,7 +54,8 @@ class HomePage extends StatelessWidget {
                     label: "Manage",
                     onTap: () => Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const ManagePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const ManagePage()),
                     ),
                   ),
                   _buildButton(
@@ -59,13 +63,22 @@ class HomePage extends StatelessWidget {
                     label: "Add new",
                     onTap: () => Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const AddNewPage()),
+                      MaterialPageRoute(
+                          builder: (context) => const AddNewPage()),
                     ),
+                  ),
+                  _buildButton(
+                    context: context,
+                    label: "Test",
+                    onTap: () {
+                      Provider.of<BillProvider>(context, listen: false)
+                          .triggerTestNotification();
+                    },
                   ),
                 ],
               ),
             ),
-            
+
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
               child: Divider(
@@ -73,7 +86,7 @@ class HomePage extends StatelessWidget {
                 thickness: 0.5,
               ),
             ),
-            
+
             // Bills List Section
             Expanded(
               child: billProvider.bills.isEmpty
@@ -111,7 +124,7 @@ class HomePage extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  "\$${bill.price}",
+                                  "€${bill.price}",
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,

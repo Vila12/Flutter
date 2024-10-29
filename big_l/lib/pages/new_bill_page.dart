@@ -4,6 +4,7 @@ import 'package:big_l/pages/home_page.dart';
 import 'package:big_l/providers/bill_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+// import 'package:big_l/service/bill_database.dart';
 import 'package:provider/provider.dart';
 
 class AddNewPage extends StatefulWidget {
@@ -204,7 +205,7 @@ class _AddNewPageState extends State<AddNewPage> {
                   // Submit Button
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           // Create a new Bill instance
                           final newBill = Bill(
@@ -212,26 +213,33 @@ class _AddNewPageState extends State<AddNewPage> {
                             price: _priceController.text,
                             dueDate: _dateController.text,
                           );
-
-                          // Add the new bill to the provider
-                          Provider.of<BillProvider>(context, listen: false)
-                              .addBill(newBill);
-
-                          // Show a success message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Bill added: ${newBill.name}'),
-                              backgroundColor: const Color(0xFF61bc84),
-                            ),
-                          );
-
-                          // Navigate back to home page
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomePage(),
-                            ),
-                          );
+                          try {
+                            // In AddNewPage, replace the BillDatabase.saveBill call with:
+                            await Provider.of<BillProvider>(context,
+                                    listen: false)
+                                .addBill(newBill);
+                            // Show a success message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Bill added: ${newBill.name}'),
+                                backgroundColor: const Color(0xFF61bc84),
+                              ),
+                            );
+                            // Navigate back to home page
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const HomePage(),
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error saving bill: $e'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(

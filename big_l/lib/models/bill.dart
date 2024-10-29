@@ -1,4 +1,4 @@
-class Bill{
+class Bill {
   final String name;
   final String price;
   final String dueDate;
@@ -11,14 +11,21 @@ class Bill{
     this.isPaid = false,
   });
 
-  Map<String, dynamic> toMap(){
-  return {
-    'name': name,
-    'amount': price,
-    'dueDate': dueDate,
-    'isPaid': isPaid,
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'price': price,
+      'dueDate': dueDate,
+      'isPaid': isPaid,
     };
   }
 
+  static Bill fromMap(Map<String, dynamic> map) {
+    return Bill(
+      name: map['name'],
+      price: map['price'].toString(),
+      dueDate: map['dueDate'],
+      isPaid: map['isPaid'] ?? false,
+    );
+  }
 }
-
