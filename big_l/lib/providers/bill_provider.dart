@@ -62,9 +62,4 @@ class BillProvider with ChangeNotifier {
     }
   }
 
-  Future<void> triggerTestNotification() async {
-    // Add test functionality if needed
-    print('Test notification triggered');
-    notifyListeners();
-  }
 }

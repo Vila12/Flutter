@@ -68,14 +68,3 @@ class BillDatabase {
     }
   }
 }
-
-// extension BillExtension on Bill {
-//   static Bill fromMap(Map<String, dynamic> map) {
-//     return Bill(
-//       name: map['name'],
-//       price: map['price'],
-//       dueDate: map['dueDate'],
-//       isPaid: map['isPaid'],
-//     );
-//   }
-// }

@@ -67,14 +67,6 @@ class HomePage extends StatelessWidget {
                           builder: (context) => const AddNewPage()),
                     ),
                   ),
-                  _buildButton(
-                    context: context,
-                    label: "Test",
-                    onTap: () {
-                      Provider.of<BillProvider>(context, listen: false)
-                          .triggerTestNotification();
-                    },
-                  ),
                 ],
               ),
             ),
